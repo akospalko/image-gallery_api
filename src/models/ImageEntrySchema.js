@@ -14,13 +14,13 @@ const ImageEntrySchema = new mongoose.Schema({
     type: [String],
   }, 
   description: {
-    type: Boolean,
+    type: String,
   },
-  date: {
-    type: Date,
-    default: () => Date.now(),
-  },
-  img: {
+  // date: {
+  //   type: Date,
+  //   default: () => Date.now(),
+  // },
+  imageURL: {
     type: String,
     required: true,
     default: 'test.jpg',

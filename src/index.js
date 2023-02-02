@@ -1,26 +1,19 @@
 const express = require('express');
 const app = express();
 require('dotenv').config(); // access .env contents
-const imageEntry = require('./routes/imageEntry')
-
 const port = process.env.PORT || 4000;
+const bodyParser = require('body-parser');
+const imageEntry = require('./routes/imageEntry')
 const connectDB = require('./database/connect');
-const Grid = require('gridfs-stream');
+
+//middlewares
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 //routes
-app.get('/', imageEntry);
+app.use('/api/v1/image-entry', imageEntry);
 
-
-//routes for getting, 
-// app.get('/image-entries/', (req, res) => {
-//   res.send('Testing server. All is OK')
-// })
-// app.post('/image-entry/', (req, res) => {
-//   res.send('Testing server. All is OK')
-// })
-// app.get('/image-entry/', (req, res) => {
-//   res.send('Testing server. All is OK')
-// })
-
+//start server
 const serverStart = async () => {
   try {
     await connectDB(process.env.MONGO_URI);

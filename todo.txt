@@ -1,9 +1,0 @@
-plan
-- set up mongo db
-- grid fs
-- multer:
-  --1. try out with local storage??
-  --2. with db
--gridfs - ???
-- create routes
-- controllers

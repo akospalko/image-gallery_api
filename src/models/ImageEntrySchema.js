@@ -20,7 +20,7 @@ const ImageEntrySchema = new mongoose.Schema({
   //   type: Date,
   //   default: () => Date.now(),
   // },
-  imageURL: {
+  imageName: {
     type: String,
     required: true,
     default: 'test.jpg',

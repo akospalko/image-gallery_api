@@ -5,14 +5,20 @@ const imageEntry = require('../middleware/imageEntry');
 
 const { 
   createImageEntry,
+  deleteImageEntry,
+  getAllImageEntries,
   // updateImageEntry,
-  // deleteImageEntry,
-  // getAllImageEntries,
   // getSingleImageEntry,
 } = require('../controllers/imageEntry');
 
-// router.post("/image-entry", imageEntry.single("file"), async (req, res) => {
-// router.route("/").post(imageEntry.single("imageURL"), createImageEntry); 
-router.post("/", imageEntry.single("imageURL"), createImageEntry); 
+
+router.route('/')
+.post(imageEntry.single("imageName"), createImageEntry)
+.get(getAllImageEntries); 
+
+router.route('/:id')
+.delete(deleteImageEntry);
+// .get()
+// .patch()
 
 module.exports = router;

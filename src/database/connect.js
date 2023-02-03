@@ -2,12 +2,13 @@
 const mongoose = require('mongoose');
 
 const connectDB = async (url) => { // url -> connection string provided by mongo  
-  await mongoose.set("strictQuery", false);
-  await mongoose
-  .connect(url, { 
+  mongoose.set("strictQuery", false);
+  const params ={ 
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  });
+  }
+  mongoose
+  .connect(url, params);
 }
 
 module.exports = connectDB;

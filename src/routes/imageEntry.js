@@ -2,23 +2,21 @@
 const express = require('express');
 const router = express.Router();
 const imageEntry = require('../middleware/imageEntry'); 
-
 const { 
   createImageEntry,
   deleteImageEntry,
   getAllImageEntries,
-  // updateImageEntry,
-  // getSingleImageEntry,
+  getSingleImageEntry,
+  updateImageEntry,
 } = require('../controllers/imageEntry');
-
 
 router.route('/')
 .post(imageEntry.single("imageName"), createImageEntry)
 .get(getAllImageEntries); 
 
 router.route('/:id')
-.delete(deleteImageEntry);
-// .get()
-// .patch()
+.delete(deleteImageEntry)
+.get(getSingleImageEntry)
+.patch(imageEntry.single("imageName"), updateImageEntry)
 
 module.exports = router;

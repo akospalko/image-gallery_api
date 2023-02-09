@@ -10,21 +10,21 @@ const ImageEntrySchema = new mongoose.Schema({
     type: String,
     required: true,
   }, 
-  coordinate: {
-    type: [String],
+  gps: {
+    type: String,
   }, 
   description: {
     type: String,
   },
-  // date: {
-  //   type: Date,
-  //   default: () => Date.now(),
-  // },
+  captureDate: {
+    type: String,
+  },
   imageName: {
     type: String,
     required: true,
-    default: 'test.jpg',
-  },
-})
+  }, 
+},   
+{ timestamps: true }
+)
 
 module.exports = mongoose.model('ImageEntry', ImageEntrySchema)

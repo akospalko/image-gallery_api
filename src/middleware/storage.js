@@ -31,7 +31,6 @@ const bucketName = process.env.AWS_S3_BUCKET_NAME
   await s3.send(putCommand); // create entry
 }
 
-
 //delete image from storage
 const deleteImage = async (imageName) => {
   const params = {
@@ -69,7 +68,6 @@ const getStorageSignedURL = async (data, expireTime = 3600) => {
     } 
   }
 }
-
 
 module.exports = {
   uploadImage,

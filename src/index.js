@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 require('dotenv').config(); // access .env contents
+const cors = require('cors');
 const port = process.env.PORT || 4000;
 const bodyParser = require('body-parser');
 const imageEntry = require('./routes/imageEntry')
@@ -9,6 +10,9 @@ const connectDB = require('./database/connect');
 //middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors({ // allow cors for a specific origin 
+  origin: 'http://127.0.0.1:5173'
+}))
 
 //routes
 app.use('/api/v1/image-entry', imageEntry);

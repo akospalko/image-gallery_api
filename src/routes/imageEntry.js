@@ -11,12 +11,12 @@ const {
 } = require('../controllers/imageEntry');
 
 router.route('/')
-.post(imageEntry.single("imageName"), createImageEntry)
+.post(imageEntry.single("imageFile"), createImageEntry)
 .get(getAllImageEntries); 
 
 router.route('/:id')
 .delete(deleteImageEntry)
 .get(getSingleImageEntry)
-.patch(imageEntry.single("imageName"), updateImageEntry)
+.patch(imageEntry.single("imageFile"), updateImageEntry)
 
 module.exports = router;

@@ -29,27 +29,29 @@ const getSingleImageEntry = asyncWrapper(async (req, res, next) => {
 
 //CREATE image entry
 const createImageEntry = asyncWrapper(async (req, res) => {
-  const {title, author, coordinate, description} = req.body;
+  console.log(req)
+  const {title, author, gps, captureDate, description} = req.body;
   const {buffer, mimetype} = req.file;
   const resizedImageBuffer = await resizeImage(buffer);  // resize image before upload using sharp
   const imageName = randomName();  // generate randomized image name 
   await uploadImage(imageName, resizedImageBuffer, mimetype);
-  const entryData = {title, author, coordinate, description, imageName} 
+  const entryData = {title, author, gps, captureDate, description, imageName} 
   const imageEntry = await ImageEntry.create(entryData); 
   res.status(201).json({ imageEntry }); 
 })
 
+//TODO: create imageFile -> separeate imageName from imageFile 
 //UPDATE (PATCH) image entry
 const updateImageEntry = asyncWrapper(async (req, res, next) => {
   const { id: entryID } = req.params; 
-  const { title, author, coordinate, description } = req.body; // new req data 
-  let updateData = {title, author, coordinate, description}; // new data we want to update the db with 
+  const { title, author, gps, captureDate, description } = req.body; // new req data 
+  let updateData = {title, author, gps, captureDate, description}; // new data we want to update the db with 
   if(req.file) {
     const fetchedImageEntry = await ImageEntry.findOne({ _id: entryID });
     const imageName = fetchedImageEntry.imageName;
     updateData = {...updateData, imageName};
     if (!fetchedImageEntry) {
-      return res.status(404).json({message: `No image entry with id : ${entryID}`})
+      return res.status(404).json({message: `No image entry with id: ${entryID}`})
     }
     const resizedImageBuffer = await resizeImage(req.file.buffer); // resize image
     await uploadImage(imageName, resizedImageBuffer, req.file.mimetype); // upload image

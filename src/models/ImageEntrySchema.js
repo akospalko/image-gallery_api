@@ -10,8 +10,11 @@ const ImageEntrySchema = new mongoose.Schema({
     type: String,
     required: true,
   }, 
-  gps: {
-    type: String,
+  gpsLatitude: {
+    type: Number,
+  }, 
+  gpsLongitude: {
+    type: Number,
   }, 
   description: {
     type: String,

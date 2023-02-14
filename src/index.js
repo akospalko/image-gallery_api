@@ -4,7 +4,8 @@ require('dotenv').config(); // access .env contents
 const cors = require('cors');
 const port = process.env.PORT || 4000;
 const bodyParser = require('body-parser');
-const imageEntry = require('./routes/imageEntry')
+const imageEntry = require('./routes/imageEntry');
+const registerUser = require('./routes/registerUser');
 const connectDB = require('./database/connect');
 
 //middlewares
@@ -16,6 +17,7 @@ app.use(cors({ // allow cors for a specific origin
 
 //routes
 app.use('/api/v1/image-entry', imageEntry);
+app.use('/api/v1/register', registerUser);
 
 //start server
 const serverStart = async () => {

@@ -1,25 +1,37 @@
 const express = require('express');
 const app = express();
 require('dotenv').config(); // access .env contents
-const cors = require('cors');
 const port = process.env.PORT || 4000;
 const bodyParser = require('body-parser');
-const imageEntry = require('./routes/imageEntry');
+const corsOptions = require('./config/corsOptions');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const connectDB = require('./database/connect');
+const verifyJWT = require('./middleware/verifyJWT');
 const registerUser = require('./routes/registerUser');
 const authenticateUser = require('./routes/authenticateUser');
-const connectDB = require('./database/connect');
+const refreshToken = require('./routes/refreshToken');
+const imageEntry = require('./routes/imageEntry');
 
-//middlewares
+
+// MIDDLEWARES
+// handle url encoded form data
 app.use(bodyParser.urlencoded({ extended: true }));
+// handle json 
 app.use(bodyParser.json());
-app.use(cors({ // allow cors for a specific origin 
-  origin: 'http://127.0.0.1:5173'
-}))
-//routes
-app.use('/api/v1/image-entry', imageEntry);
+// handle cookies 
+app.use(cookieParser());
+// allow CORS for the whitelisted origin(s) 
+app.use(cors(corsOptions));
+
+// ROUTES
 app.use('/api/v1/register', registerUser);
 app.use('/api/v1/login', authenticateUser);
-//start server
+app.use('/api/v1/refresh', refreshToken); // receives cookie w refresht token -> issues a new access token when it expires 
+app.use(verifyJWT);
+app.use('/api/v1/image-entry', imageEntry);
+
+
 const serverStart = async () => {
   try {
     await connectDB(process.env.MONGO_URI);

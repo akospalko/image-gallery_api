@@ -3,6 +3,7 @@ const ImageEntry = require('../models/ImageEntrySchema');
 const asyncWrapper = require('../middleware/asyncWrapper');
 const randomName = require('../helper/randomName');
 const resizeImage = require('../middleware/resizeImage');
+const verifyJWT = require('../middleware/verifyJWT')
 const { 
   uploadImage,
   deleteImage,

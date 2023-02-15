@@ -11,8 +11,8 @@ const {
 } = require('../controllers/imageEntry');
 
 router.route('/')
-.post(imageEntry.single("imageFile"), createImageEntry)
-.get(getAllImageEntries); 
+.get(getAllImageEntries) 
+.post(imageEntry.single("imageFile"), createImageEntry);
 
 router.route('/:id')
 .delete(deleteImageEntry)

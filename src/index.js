@@ -4,13 +4,16 @@ require('dotenv').config(); // access .env contents
 const port = process.env.PORT || 4000;
 const bodyParser = require('body-parser');
 const corsOptions = require('./config/corsOptions');
+
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./database/connect');
 const verifyJWT = require('./middleware/verifyJWT');
 const registerUser = require('./routes/registerUser');
+const credentials = require('./middleware/credentials');
 const authenticateUser = require('./routes/authenticateUser');
 const refreshToken = require('./routes/refreshToken');
+const logoutUser = require('./routes/logoutUser');
 const imageEntry = require('./routes/imageEntry');
 
 
@@ -21,6 +24,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // handle cookies 
 app.use(cookieParser());
+// set response header for requests with credentials - must come before CORS 
+app.use(credentials) 
 // allow CORS for the whitelisted origin(s) 
 app.use(cors(corsOptions));
 
@@ -28,7 +33,9 @@ app.use(cors(corsOptions));
 app.use('/api/v1/register', registerUser);
 app.use('/api/v1/login', authenticateUser);
 app.use('/api/v1/refresh', refreshToken); // receives cookie w refresht token -> issues a new access token when it expires 
-app.use(verifyJWT);
+app.use('/api/v1/logout', logoutUser); // logout user by delete active tokens
+
+app.use(verifyJWT); // middleware to protect routes after its invoke
 app.use('/api/v1/image-entry', imageEntry);
 
 

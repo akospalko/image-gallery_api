@@ -3,7 +3,6 @@ const ImageEntry = require('../models/ImageEntrySchema');
 const asyncWrapper = require('../middleware/asyncWrapper');
 const randomName = require('../helper/randomName');
 const resizeImage = require('../middleware/resizeImage');
-const verifyJWT = require('../middleware/verifyJWT')
 const { 
   uploadImage,
   deleteImage,
@@ -30,7 +29,6 @@ const getSingleImageEntry = asyncWrapper(async (req, res, next) => {
 
 //CREATE image entry
 const createImageEntry = asyncWrapper(async (req, res) => {
-  console.log(req)
   const {title, author, gpsLatitude, gpsLongitude, captureDate, description} = req.body;
   const {buffer, mimetype} = req.file;
   const resizedImageBuffer = await resizeImage(buffer);  // resize image before upload using sharp

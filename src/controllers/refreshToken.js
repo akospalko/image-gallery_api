@@ -19,8 +19,15 @@ const foundUser = await User.findOne({refreshToken});
     process.env.JWT_REFRESH_TOKEN_SECRET,
     (error, decoded) => {
       if(error || decoded.username !== foundUser.username) return res.status(403).json({message: 'Error while validating your access'}) 
+       // store current user's roles (their code) which we will pass to the access token
+      const roles = Object.keys(foundUser.roles);
       const accessToken = jwt.sign(
-        {username: decoded.username}, 
+        {
+          UserInfo: {
+            username: decoded.username,
+            roles
+          }, 
+        },
         process.env.JWT_ACCESS_TOKEN_SECRET,
         {expiresIn: '30s'}
       )

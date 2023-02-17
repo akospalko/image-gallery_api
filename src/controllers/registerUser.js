@@ -16,7 +16,7 @@ const registerUser = asyncWrapper(async (req, res) => {
     // hash pw using bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
     // create user credentials
-    const userCredentials = {email, username, password: hashedPassword}; 
+    const userCredentials = { email, username, roles: { user: 2001 }, password: hashedPassword }; 
     // post new user
     const newUser = await User.create(userCredentials); 
     res.status(201).json({success: `Created new user: ${username}`}); 

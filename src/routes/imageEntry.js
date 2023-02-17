@@ -2,6 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const imageEntry = require('../middleware/imageEntry'); 
+const ROLES_LIST = require('../config/roles');
+const verifyRoles = require('../middleware/verifyRoles');
+
 const { 
   createImageEntry,
   deleteImageEntry,
@@ -12,11 +15,11 @@ const {
 
 router.route('/')
 .get(getAllImageEntries) 
-.post(imageEntry.single("imageFile"), createImageEntry);
+.post(verifyRoles(ROLES_LIST.admin), imageEntry.single("imageFile"), createImageEntry);
 
 router.route('/:id')
-.delete(deleteImageEntry)
-.get(getSingleImageEntry)
-.patch(imageEntry.single("imageFile"), updateImageEntry)
+.delete(verifyRoles(ROLES_LIST.admin), deleteImageEntry)
+.get(verifyRoles( ROLES_LIST.editor), getSingleImageEntry)
+.patch(verifyRoles(ROLES_LIST.admin, ROLES_LIST.editor), imageEntry.single("imageFile"), updateImageEntry)
 
 module.exports = router;

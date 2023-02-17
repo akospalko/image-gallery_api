@@ -33,9 +33,9 @@ app.use(cors(corsOptions));
 app.use('/api/v1/register', registerUser);
 app.use('/api/v1/login', authenticateUser);
 app.use('/api/v1/refresh', refreshToken); // receives cookie w refresht token -> issues a new access token when it expires 
-app.use('/api/v1/logout', logoutUser); // logout user by delete active tokens
+app.use('/api/v1/logout', logoutUser); // logout user by deleting active tokens
 
-app.use(verifyJWT); // middleware to protect routes after its invoke
+app.use(verifyJWT); // protect all routes defined after invoked
 app.use('/api/v1/image-entry', imageEntry);
 
 

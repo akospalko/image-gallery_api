@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
-  if(!authHeader?.startsWith('Bearer ')) return res.status(401).json({message: 'Missing header'})
+  if(!authHeader?.startsWith('Bearer ')) return res.sendStatus(401);
   const token = authHeader.split(' ')[1];
   // verify token
   jwt.verify(
@@ -12,7 +12,8 @@ const verifyJWT = (req, res, next) => {
     process.env.JWT_ACCESS_TOKEN_SECRET,
     (error, decoded) => {
       if(error) return res.sendStatus(403); // token is received but invalid (it may have been tampered with), send forbidden status
-      req.username = decoded.username;
+      req.username = decoded.UserInfo.username;
+      req.roles = decoded.UserInfo.roles;
       next();
     }
   )

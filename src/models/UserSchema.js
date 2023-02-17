@@ -9,6 +9,18 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  roles: {
+    user: {
+      type: Number,
+      default: 2001
+    },
+    editor: {
+      type: Number
+    },
+    admin: {
+      type: Number
+    },
+  },
   password: {
     type: String,
     required: true

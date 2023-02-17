@@ -13,12 +13,20 @@ const loginUser = asyncWrapper(async (req, res) => {
   if(!foundUser) return res.status(401).json({message: 'Incorrect username or password'}) // we should not provide the client if the username exists or not. We inform client that both username and password are incorrect
   // compare user input and db passwords
   const matchedPassword = await bcrypt.compare(password, foundUser.password); 
+  // console.log('authenticate user:', foundUser);
   if(matchedPassword) {
+    // store current user's roles (their code) which we will pass to the access token
+    const roles = Object.values(foundUser.roles); 
     // create JWTs
     const accessToken = jwt.sign(
-      {username: foundUser.username }, // payload with the specified/ relevant info object (don't provide password in case somebody gets an access to the token ) 
+      {
+        UserInfo: {
+          username: foundUser.username, // payload with the specified/ relevant info object (don't provide password in case somebody gets an access to the token ) 
+          roles // store roles by their code 
+        }
+      },
       process.env.JWT_ACCESS_TOKEN_SECRET, // access token's secret key  
-      {expiresIn: '45s'} // expiry date, production mode: 5-10min 
+      { expiresIn: '45s' } // expiry date, production mode: 5-10min 
     )
     const refreshToken = jwt.sign(
       {username: foundUser.username }, 

@@ -4,7 +4,6 @@ require('dotenv').config(); // access .env contents
 const port = process.env.PORT || 4000;
 const bodyParser = require('body-parser');
 const corsOptions = require('./config/corsOptions');
-
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./database/connect');
@@ -26,7 +25,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 // set response header for requests with credentials - must come before CORS 
 app.use(credentials) 
-// allow CORS for the whitelisted origin(s) 
+// allow CORS for the allowed origin(s) 
 app.use(cors(corsOptions));
 
 // ROUTES

@@ -13,7 +13,6 @@ const loginUser = asyncWrapper(async (req, res) => {
   if(!foundUser) return res.status(401).json({message: 'Incorrect username or password'}) // we should not provide the client if the username exists or not. We inform client that both username and password are incorrect
   // compare user input and db passwords
   const matchedPassword = await bcrypt.compare(password, foundUser.password); 
-  // console.log('authenticate user:', foundUser);
   if(matchedPassword) {
     // store current user's roles (their code) which we will pass to the access token
     const roles = Object.values(foundUser.roles); 

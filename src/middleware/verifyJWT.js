@@ -4,7 +4,10 @@ require('dotenv').config();
 
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
-  if(!authHeader?.startsWith('Bearer ')) return res.sendStatus(401);
+  
+  console.log('verify token:', req.headers);
+  // console.log('authHeader', authHeader);
+  if(!authHeader?.startsWith('Bearer ')) return res.status(401).json({success: false, message: 'Unauthorized. Token is missing'});
   const token = authHeader.split(' ')[1];
   // verify token
   jwt.verify(

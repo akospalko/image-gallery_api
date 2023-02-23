@@ -7,10 +7,10 @@ require('dotenv').config();
 const loginUser = asyncWrapper(async (req, res) => {
   const { username, password } = req.body;
   // credentials are not provided
-  if(!username || !password) return res.status(400).json({message: 'Provide credentials'});
+  if(!username || !password) return res.status(400).json({success: false, message: 'Provide credentials'});
   // compare find username in db with req's username 
   const foundUser = await User.findOne({username: username}).exec();
-  if(!foundUser) return res.status(401).json({message: 'Incorrect username or password'}) // we should not provide the client if the username exists or not. We inform client that both username and password are incorrect
+  if(!foundUser) return res.status(401).json({success: false, message: 'Incorrect username or password'}) // we should not provide the client if the username exists or not. We inform client that both username and password are incorrect
   // compare user input and db passwords
   const matchedPassword = await bcrypt.compare(password, foundUser.password); 
   if(matchedPassword) {
@@ -25,22 +25,22 @@ const loginUser = asyncWrapper(async (req, res) => {
         }
       },
       process.env.JWT_ACCESS_TOKEN_SECRET, // access token's secret key  
-      { expiresIn: '45s' } // expiry date, production mode: 5-10min 
-    )
+      { expiresIn: '10s' } // expiry date, production mode: 5-10min 
+    );
     const refreshToken = jwt.sign(
-      {username: foundUser.username }, 
+      { username: foundUser.username }, 
       process.env.JWT_REFRESH_TOKEN_SECRET, 
-      {expiresIn: '1d'} // refresh tokens usually has much larger expiry time 
-    )
+      { expiresIn: '1d' } // refresh tokens usually has much larger expiry time 
+    );
     // update current user's document with the refresh token
     foundUser.refreshToken = refreshToken;
     const updatedUser = await foundUser.save();
     // send secure cookie (http only) with the refresh token to the client cookie
     res.cookie('jwt', refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }); // duration: 1d  
     // send success message and access token to user
-    return res.status(200).json({success: `${username} is logged in`, accessToken});
+    res.status(200).json({success: true, message: `Success. ${username} is logged in`, roles, accessToken});
   } else {
-    return res.status(401).json({message: 'Incorrect username or password'});
+    res.status(401).json({success: false, message: 'Incorrect username or password '});
   }
 })
 

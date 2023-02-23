@@ -19,7 +19,7 @@ router.route('/')
 
 router.route('/:id')
 .delete(verifyRoles(ROLES_LIST.admin), deleteImageEntry)
-.get(verifyRoles( ROLES_LIST.editor), getSingleImageEntry)
-.patch(verifyRoles(ROLES_LIST.admin, ROLES_LIST.editor), imageEntry.single("imageFile"), updateImageEntry)
+.get(verifyRoles(ROLES_LIST.editor, ROLES_LIST.admin), getSingleImageEntry)
+.patch(verifyRoles(ROLES_LIST.editor, ROLES_LIST.admin), imageEntry.single("imageFile"), updateImageEntry)
 
 module.exports = router;

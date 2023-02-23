@@ -36,7 +36,7 @@ app.use('/api/v1/logout', logoutUser); // logout user by deleting active tokens
 
 app.use(verifyJWT); // protect all routes defined after invoked
 app.use('/api/v1/image-entry', imageEntry);
-
+//TODO: route for handling users: create, update, delete, assign role
 
 const serverStart = async () => {
   try {

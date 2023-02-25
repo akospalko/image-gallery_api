@@ -25,22 +25,22 @@ const loginUser = asyncWrapper(async (req, res) => {
         }
       },
       process.env.JWT_ACCESS_TOKEN_SECRET, // access token's secret key  
-      { expiresIn: '10s' } // expiry date, production mode: 5-10min 
+      { expiresIn: '15s' } // expiry date, production mode: 5-10min 
     );
     const refreshToken = jwt.sign(
       { username: foundUser.username }, 
       process.env.JWT_REFRESH_TOKEN_SECRET, 
-      { expiresIn: '1d' } // refresh tokens usually has much larger expiry time 
+      { expiresIn: '5h' } // refresh tokens usually has much larger expiry time 
     );
     // update current user's document with the refresh token
     foundUser.refreshToken = refreshToken;
     const updatedUser = await foundUser.save();
     // send secure cookie (http only) with the refresh token to the client cookie
-    res.cookie('jwt', refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }); // duration: 1d  
+    res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }); // duration: 1d  
     // send success message and access token to user
     res.status(200).json({success: true, message: `Success. ${username} is logged in`, roles, accessToken});
   } else {
-    res.status(401).json({success: false, message: 'Incorrect username or password '});
+    res.status(401).json({success: true, message: 'Incorrect username or password '});
   }
 })
 

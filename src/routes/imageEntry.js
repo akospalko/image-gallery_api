@@ -13,13 +13,12 @@ const {
   updateImageEntry,
 } = require('../controllers/imageEntry');
 
-router.route('/')
-.get(getAllImageEntries) 
+router.route('/:collection')
+.get(verifyRoles(ROLES_LIST.user, ROLES_LIST.admin), getAllImageEntries) 
 .post(verifyRoles(ROLES_LIST.admin), imageEntry.single("imageFile"), createImageEntry);
-
-router.route('/:id')
+router.route('/:collection/:id')
 .delete(verifyRoles(ROLES_LIST.admin), deleteImageEntry)
-.get(verifyRoles(ROLES_LIST.editor, ROLES_LIST.admin), getSingleImageEntry)
+.get(verifyRoles(ROLES_LIST.user, ROLES_LIST.admin), getSingleImageEntry)
 .patch(verifyRoles(ROLES_LIST.editor, ROLES_LIST.admin), imageEntry.single("imageFile"), updateImageEntry)
 
 module.exports = router;

@@ -15,6 +15,8 @@ const refreshToken = require('./routes/refreshToken');
 const logoutUser = require('./routes/logoutUser');
 const imageEntry = require('./routes/imageEntry');
 const getAllHomePhotos = require('./routes/getAllHomePhotos');
+const userPhotoEntryCollection = require('./routes/userPhotoEntryCollection');
+// const userPhotoEntryLikes = require('./routes/userPhotoEntryLikes');
 
 // MIDDLEWARES
 // handle url encoded form data
@@ -35,10 +37,14 @@ app.use('/api/v1/login', authenticateUser);
 app.use('/api/v1/refresh', refreshToken); // receives cookie w refresht token -> issues a new access token when it expires 
 app.use('/api/v1/logout', logoutUser); // logout user by deleting active tokens
 app.use('/api/v1/home-photos', getAllHomePhotos); // get image entries for home page photo slider 
-
 // protected
 app.use(verifyJWT); // protect all routes defined after invoked
 app.use('/api/v1/image-entry', imageEntry);
+// TODO: add photo to collection logic
+app.use('/api/v1/user-photo-collection', userPhotoEntryCollection);
+
+// TODO: photo like logic
+// app.use('api/v1/user-photo-likes', userPhotoEntryLikes);
 //TODO: route for handling users: create, update, delete, assign role
 
 const serverStart = async () => {

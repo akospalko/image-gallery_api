@@ -1,3 +1,4 @@
+//NOTE: for postman to work while testing cookies secure value must be set to false (secure: false). set back to true after finished with testing  
 const User = require('../models/UserSchema');
 const asyncWrapper = require('../middleware/asyncWrapper');
 const bcrypt = require('bcrypt');
@@ -36,7 +37,7 @@ const loginUser = asyncWrapper(async (req, res) => {
     foundUser.refreshToken = refreshToken;
     const updatedUser = await foundUser.save();
     // send secure cookie (http only) with the refresh token to the client cookie
-    res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }); // duration: 1d  
+    res.cookie('jwt', refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }); // duration: 1d  
     // send success message and access token to user
     res.status(200).json({success: true, message: `Success. ${username} is logged in`, roles, accessToken});
   } else {

@@ -28,7 +28,7 @@ const refreshToken = asyncWrapper(async (req, res) => {
           }, 
         },
         process.env.JWT_ACCESS_TOKEN_SECRET,
-        { expiresIn: '10s' }
+        { expiresIn: '60s' }
       )
       res.status(200).json({ success: true, roles, accessToken, message: 'Generating new access token was successfull' });
     }

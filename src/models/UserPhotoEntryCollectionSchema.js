@@ -8,11 +8,11 @@ const UserPhotoCollectionSchema = new mongoose.Schema( {
   },
   userCollection: { // array of photo entry object id's the auth-d user added to their collection 
     type: [mongoose.Schema.Types.ObjectId],
-    required: true
+    // required: true
   },
   userLikes: { // array of photo entry object id's the auth-d user liked
     type: [mongoose.Schema.Types.ObjectId],
-    required: true
+    // required: true
   }  
 })
 

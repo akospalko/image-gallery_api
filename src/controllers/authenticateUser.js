@@ -26,7 +26,7 @@ const loginUser = asyncWrapper(async (req, res) => {
         }
       },
       process.env.JWT_ACCESS_TOKEN_SECRET, // access token's secret key  
-      { expiresIn: '15s' } // expiry date, production mode: 5-10min 
+      { expiresIn: '60000s' } // expiry date, production mode: 5-10min 
     );
     const refreshToken = jwt.sign(
       { username: foundUser.username }, 

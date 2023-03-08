@@ -2,7 +2,8 @@
 // TODO: handle improper id format
 const asyncWrapper = require('../middleware/asyncWrapper');
 const UserPhotoEntryCollection = require('../models/UserPhotoEntryCollectionSchema');
-var mongoose = require('mongoose'); // required to convert id string  to ObjectId
+const ImageEntryGallery = require('../models/ImageEntryGallerySchema');
+const mongoose = require('mongoose'); // required to convert id string  to ObjectId
 
 // SHARED FUNCTIONALITIES
 // get userID from the Collection
@@ -16,7 +17,7 @@ const filterUserID = (userID) => {  // filter by: userID
 const options = { new: true, runValidators: true } // query options 
 
 // CREATE/UPDATE photo entry 
-const addPhotoEntryToCollection = asyncWrapper(async (req, res) => {
+const addPhotoIDToCollection = asyncWrapper(async (req, res) => {
   // get/confirm request data
   const { userID, photoEntryID } = req.body ?? {};
   if(!userID || !photoEntryID) return res.status(400).json({message: 'User id and photo entry id are required'});
@@ -40,7 +41,7 @@ const addPhotoEntryToCollection = asyncWrapper(async (req, res) => {
 })
 
 // DELETE from collection
-const removePhotoEntryFromCollection = asyncWrapper(async (req, res) => {
+const removePhotoIDFromCollection = asyncWrapper(async (req, res) => {
   // get/confirm request data
   const { userID, photoEntryID } = req.body ?? {};
   // query for existing userID in Collection
@@ -58,7 +59,7 @@ const removePhotoEntryFromCollection = asyncWrapper(async (req, res) => {
 })
 
 // GET USER COLLECTION PHOTOS
-const getUserCollectionPhotos = asyncWrapper(async (req, res) => {
+const getUserCollectionPhotoIDs = asyncWrapper(async (req, res) => {
   const { userID } = req.params ?? {};
   if (!userID) return sendStatus(401); // req userID is missing
   const matchedUser = await getMatchedUser(userID); // find user  
@@ -68,8 +69,21 @@ const getUserCollectionPhotos = asyncWrapper(async (req, res) => {
   res.status(200).json({success: true, userCollection: userCollection, message: 'Fetching user collection was successful'}) // return user collection
 })  
 
+// TODO: GET specific photo entries from photo gallery collection and return it to the user 
+const getUserCollectionPhotoEntries = asyncWrapper(async (req, res) => {
+  // parse query string
+  var userCollection = JSON.parse(req.query.userCollection); // array of photoID that belongs to the auth-d user
+  console.log('user collection: ', userCollection);
+  const photoEntries = await ImageEntryGallery.find({ '_id': { $in: userCollection } });
+  console.log(photoEntries);
+  res.status(200).json({ success: true, userCollection: photoEntries,  message: 'OK' }); 
+  // TODO: filter data
+  // TODO: handle query response, send back data
+}) 
+
 module.exports = {
-  addPhotoEntryToCollection,
-  removePhotoEntryFromCollection,
-  getUserCollectionPhotos,
+  addPhotoIDToCollection,
+  removePhotoIDFromCollection,
+  getUserCollectionPhotoIDs,
+  getUserCollectionPhotoEntries
 }

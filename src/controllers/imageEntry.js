@@ -1,3 +1,4 @@
+// TODO: rename ImageEntry to PhotoEntry
 // handle image entry CRUD operations  
 const ImageEntryGallery = require('../models/ImageEntryGallerySchema');
 const ImageEntryHome = require('../models/ImageEntryHomeSchema');
@@ -13,7 +14,7 @@ const {
 // find active collection
 const findActiveCollection = (collectionName) => {
   let foundCollection;
-  if(collectionName === 'home') {
+  if(collectionName === 'home') { // home photos
     foundCollection = ImageEntryHome;
   } else if (collectionName === 'gallery') {
     foundCollection = ImageEntryGallery;
@@ -53,7 +54,6 @@ const createImageEntry = asyncWrapper(async (req, res) => {
   if(!imageEntry) return res.status(400).json({ success: false, message: 'Could not create entry. Try again!' }); 
   res.status(201).json({ success: true, imageEntry, message: 'Entry created successfully' }); 
 })
-
 // TODO: create imageFile -> separeate imageName from imageFile 
 // UPDATE (PATCH) image entry
 const updateImageEntry = asyncWrapper(async (req, res, next) => {
@@ -76,7 +76,6 @@ const updateImageEntry = asyncWrapper(async (req, res, next) => {
   if (!imageEntry) return res.status(404).json({ success: true, message: `No entry with ID : ${entryID}`});
   res.status(200).json({ success: true, imageEntry, message: `Entry is fetched successfully. ID: ${entryID}`});
 })
-
 // DELETE image entry
 const deleteImageEntry = asyncWrapper(async (req, res, next) => {
   const { id: entryID, collection } = req.params;
@@ -84,7 +83,6 @@ const deleteImageEntry = asyncWrapper(async (req, res, next) => {
   const fetchedImageEntry = await activeCollection.findOne({ _id: entryID }); // get db single entry
   if (!fetchedImageEntry) return res.status(404).json({ success: false, message: `No image entry with id : ${entryID}` })
   await deleteImage(fetchedImageEntry.imageName); // delete image from storage
- 
   const imageEntry = await activeCollection.findOneAndDelete({ _id: entryID })
   if (!imageEntry) return res.status(404).json({ success: false, message: 'Entry does not exist'});
   res.status(200).json({ success: true, imageEntry, message: `Entry deleted successfully. ID: ${entryID}` });

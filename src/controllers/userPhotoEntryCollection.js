@@ -1,90 +1,75 @@
-// TODO: handle functionality for auth user adding / removing photo entries from their collection 
+// handle functionality for auth-d user adding / removing photo entries to/from their collection 
+// TODO: handle improper id format
 const asyncWrapper = require('../middleware/asyncWrapper');
 const UserPhotoEntryCollection = require('../models/UserPhotoEntryCollectionSchema');
-var mongoose = require('mongoose'); // used to convert string to ObjectId
+var mongoose = require('mongoose'); // required to convert id string  to ObjectId
 
-// filter passed in userID from collection
-const getMatchedUser = async (userID) => {
-  return await UserPhotoEntryCollection.findOne(userID);
-} 
+// SHARED FUNCTIONALITIES
+// get userID from the Collection
+const getMatchedUser = async (requestUserID) => {
+  return await UserPhotoEntryCollection.findOne({userID : requestUserID});
+}
+// shared query parameters
+const filterUserID = (userID) => {  // filter by: userID
+  return { userID: userID } 
+};
+const options = { new: true, runValidators: true } // query options 
 
 // CREATE/UPDATE photo entry 
 const addPhotoEntryToCollection = asyncWrapper(async (req, res) => {
-  // CHECK REQ BODY CONTENT
+  // get/confirm request data
   const { userID, photoEntryID } = req.body ?? {};
   if(!userID || !photoEntryID) return res.status(400).json({message: 'User id and photo entry id are required'});
-  // MATCH USER
-  // query for existing user and db
-  const filterUserID = {userID: userID}; // find doc by req body userID
-  // const matchedUser = await UserPhotoEntryCollection.findOne(filterUserID);
-  const matchedUser =  await getMatchedUser(filterUserID);
-  // CREATE DOC
-  // no user is matched -> new entry + add photo to collection
-  if(!matchedUser) {
-    const newUserCollection = await UserPhotoEntryCollection.create({userID, userCollection: [photoEntryID]});
+  // query for existing userID in Collection
+  const matchedUser =  await getMatchedUser(userID);
+  // create new Document, add new photoID to the userCollection
+  if(!matchedUser) { // user is not in the Collection 
+    const newUserCollection = await UserPhotoEntryCollection.create({userID, userCollection: [photoEntryID]}); // create new document + add photoID to userCollection
     if(!newUserCollection) return res.status(400).json({success: false, message: 'Could not add photo entry to your collection'}) 
     res.status(200).json({success: true, message: 'Photo is successfully added to your collection'});
   }
-  // UPDATE DOC
-  // check if photo id is in the collection
+  // prepare to update userCollection
   const { userCollection } = matchedUser ?? {}; // get userCollection
-  const isDuplicatePhotoID = userCollection.find(photoID => photoID?.valueOf() === photoEntryID);
-  // duplicate photo id: error res
-  if(isDuplicatePhotoID) return res.status(403).json({success: false, message: 'Photo is already in your collection'});
-  // update collection
-  // define update parameters
-  // 1. filterUserID (defined above)
-  // 2. new data to upsert the userCollection with.  
-  const convertToObjectID = mongoose.Types.ObjectId(photoEntryID); // convert req body photoEntryID to ObjectId 
-  const newData = { 
-    $addToSet: { // add only unique photo id's to array
-      userCollection: convertToObjectID 
-    }
-  } 
-  // 3. query options 
-  const options = {
-    new: true,
-    runValidators: true
-  }
-  const updatedUserCollection = await UserPhotoEntryCollection.findOneAndUpdate(filterUserID, newData, options);
+  const isDuplicatePhotoID = userCollection.find(photoID => photoID?.valueOf() === photoEntryID); // check if photo id is in the collection
+  if(isDuplicatePhotoID) return res.status(403).json({success: false, message: 'Photo is already in your collection'}); // duplicate photo id
+  // update userCollection
+  const updatedUserCollection = await UserPhotoEntryCollection.findOneAndUpdate(filterUserID(userID), { $addToSet: { userCollection: mongoose.Types.ObjectId(photoEntryID) }}, options); // add unique photoID to array that is converted to ObjectId type 
+  // handle update result
   if(!updatedUserCollection) return res.status(400).json({success: false, message: 'Could not add photo entry to your collection'}); 
   res.status(201).json({success: true, message: 'Photo is successfully added to your collection'});
 })
 
-
 // DELETE from collection
 const removePhotoEntryFromCollection = asyncWrapper(async (req, res) => {
-  // CHECK REQ BODY CONTENT
+  // get/confirm request data
   const { userID, photoEntryID } = req.body ?? {};
-  // MATCH USER IN COLLECTION
-  const filterUserID = {userID: userID}; // find doc by req body userID
-  // const matchedUser = await UserPhotoEntryCollection.findOne(filterUserID);
-  const matchedUser = await getMatchedUser(filterUserID);
+  // query for existing userID in Collection
+  const matchedUser = await getMatchedUser(userID);
   if(!matchedUser) return res.sendStatus(404); // userID is not in the collection
-  // FIND PHOTO IN DOCUMENT
+  // find photoID in user Collection
   const { userCollection } = matchedUser ?? {}; // get userCollection
   const photoIDToDelete = userCollection.find(photoID => photoID?.valueOf() === photoEntryID);
   if(!photoIDToDelete) return res.sendStatus(404); // photoID is not in the collection
-  // DELETE PhotoID (by updating the document)
-  // define update parameters
-  // 1. filterUserID (defined above)
-  // 2. data to delete from userCollection.  
-  const deleteData = { 
-    $pull: { // remove photoID from array
-      userCollection: photoEntryID // -> simple string form // photoIDToDelete -> ObjectID form)
-    }
-  } 
-  // 3. query options 
-  const options = {
-    new: true,
-    runValidators: true
-  }
-  const deletePhotoID = await UserPhotoEntryCollection.findOneAndUpdate(userID, deleteData, options);
+  // delete PhotoID (by updating the document)
+  const deletePhotoID = await UserPhotoEntryCollection.findOneAndUpdate(filterUserID(userID), { $pull: { userCollection: photoEntryID } }, options);  // $pull -> removes photoID from array
+  // handle update result
   if(!deletePhotoID) return res.status(400).json({success: false, message: 'Could not remove photo entry from your collection'}); 
   res.status(201).json({success: true, message: 'Photo is successfully removed from your collection'});
 })
 
+// GET USER COLLECTION PHOTOS
+const getUserCollectionPhotos = asyncWrapper(async (req, res) => {
+  const { userID } = req.params ?? {};
+  if (!userID) return sendStatus(401); // req userID is missing
+  const matchedUser = await getMatchedUser(userID); // find user  
+  if(!matchedUser) return res.status(404).json({success: false, message: 'You don\'t have a collection'}); // userID is not in the Collection 
+  const { userCollection } = matchedUser ?? {}; // extract userCollection 
+  if(userCollection.length < 1) return res.status(404).json({success: false, message: 'Your collection is empty'}); // userID is in the Collection, but user's photo collection is empty
+  res.status(200).json({success: true, userCollection: userCollection, message: 'Fetching user collection was successful'}) // return user collection
+})  
+
 module.exports = {
   addPhotoEntryToCollection,
   removePhotoEntryFromCollection,
+  getUserCollectionPhotos,
 }

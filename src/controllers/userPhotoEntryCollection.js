@@ -2,7 +2,7 @@
 // TODO: handle improper id format
 const asyncWrapper = require('../middleware/asyncWrapper');
 const UserPhotoEntryCollection = require('../models/UserPhotoEntryCollectionSchema');
-const ImageEntryGallery = require('../models/ImageEntryGallerySchema');
+const PhotoEntryGallery = require('../models/PhotoEntryGallerySchema');
 
 // SHARED FUNCTIONALITIES
 // get userID from the Collection
@@ -63,7 +63,7 @@ const getUserCollectionPhotoEntries = asyncWrapper(async (req, res) => {
   if(!matchedUser) return res.status(404).json({success: false, message: 'You don\'t have a collection'}); // userID is not in the Collection 
   const { userCollection } = matchedUser ?? {}; // extract userCollection 
   if(userCollection.length < 1) return res.status(404).json({success: false, message: 'Your collection is empty'}); // userID is in the Collection, but user's photo collection is empty
-  const photoEntries = await ImageEntryGallery.find({ '_id': { $in: userCollection } }); // find photo entries in gallery Collection 
+  const photoEntries = await PhotoEntryGallery.find({ '_id': { $in: userCollection } }); // find photo entries in gallery Collection 
   console.log(photoEntries);
   res.status(200).json({ success: true, userCollection: photoEntries,  message: 'Fetching user collection was successful' }); 
 }) 

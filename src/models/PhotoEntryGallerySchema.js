@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-//Schema for img entry home page photo carousel 
-const ImageEntryHomeSchema = new mongoose.Schema({ 
+// Schema for photo gallery 
+const PhotoEntryGallerySchema = new mongoose.Schema({ 
   title: {
     type: String,
     required: true,
@@ -22,7 +22,7 @@ const ImageEntryHomeSchema = new mongoose.Schema({
   captureDate: {
     type: String,
   },
-  imageName: {
+  photoName: {
     type: String,
     required: true,
   }, 
@@ -30,4 +30,4 @@ const ImageEntryHomeSchema = new mongoose.Schema({
 { timestamps: true }
 )
 
-module.exports = mongoose.model('ImageEntryHome', ImageEntryHomeSchema)
+module.exports = mongoose.model('PhotoEntryGallery', PhotoEntryGallerySchema)

@@ -10,7 +10,7 @@ const loginUser = asyncWrapper(async (req, res) => {
   // credentials are not provided
   if(!username || !password) return res.status(400).json({success: false, message: 'Provide credentials'});
   // compare find username in db with req's username 
-  const foundUser = await User.findOne({username: username}).exec();
+  const foundUser = await User.findOne({ username: username }).exec();
   if(!foundUser) return res.status(401).json({success: false, message: 'Incorrect username or password'}) // we should not provide the client if the username exists or not. We inform client that both username and password are incorrect
   // compare user input and db passwords
   const matchedPassword = await bcrypt.compare(password, foundUser.password); 

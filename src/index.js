@@ -40,12 +40,11 @@ app.use('/api/v1/home-photos', getAllHomePhotos); // get phto entries for home p
 // protected
 app.use(verifyJWT); // protect all routes defined after invoked
 app.use('/api/v1/photo-entry', photoEntry);
-// TODO: add photo to collection logic
-app.use('/api/v1/user-photo-collection', userPhotoEntryCollection);
+app.use('/api/v1/user-photo-collection', userPhotoEntryCollection); // add/remove photo to/from user's own collection
 
 // TODO: photo "like" functionalities
 // app.use('api/v1/user-photo-likes', userPhotoEntryLikes);
-//TODO: route for handling users: create, update, delete, assign role
+// TODO: route for handling users: create, update, delete, assign role
 
 const serverStart = async () => {
   try {

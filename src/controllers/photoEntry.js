@@ -20,7 +20,6 @@ const findActiveCollection = (collectionName) => {
   }
   return foundCollection;
 }
-
 // GET all photo entries
 const getAllPhotoEntries = asyncWrapper(async (req, res) => {
   const { collection } = req.params;
@@ -58,7 +57,7 @@ const updatePhotoEntry = asyncWrapper(async (req, res, next) => {
   const { id: entryID, collection } = req.params; 
   const activeCollection = findActiveCollection(collection); // get active collection
   const { title, author, gpsLatitude, gpsLongitude, captureDate, description } = req.body; // new req data 
-  let updateData = {title, author, gpsLatitude, gpsLongitude, captureDate, description}; // new data we want to update the db with 
+  let updateData = { title, author, gpsLatitude, gpsLongitude, captureDate, description }; // new data we want to update the db with 
   if(req.file) {
     const fetchedPhotoEntry = await activeCollection.findOne({ _id: entryID });
     if(!fetchedPhotoEntry) return res.status(404).json({ success: false, message: `No photo entry with id: ${entryID}` });
@@ -74,7 +73,7 @@ const updatePhotoEntry = asyncWrapper(async (req, res, next) => {
   if (!photoEntry) return res.status(404).json({ success: true, message: `No entry with ID : ${entryID}`});
   res.status(200).json({ success: true, photoEntry, message: `Entry is fetched successfully. ID: ${entryID}`});
 })
-// DELETE photo entry
+// DELETE photo entry 
 const deletePhotoEntry = asyncWrapper(async (req, res) => {
   const { id: entryID, collection } = req.params;
   const activeCollection = findActiveCollection(collection); // get active collection

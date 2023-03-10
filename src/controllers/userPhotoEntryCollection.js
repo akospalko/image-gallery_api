@@ -42,6 +42,7 @@ const addPhotoIDToCollection = asyncWrapper(async (req, res) => {
 const removePhotoIDFromCollection = asyncWrapper(async (req, res) => {
   // get/confirm request data
   const { userID, photoEntryID } = req.body ?? {};
+  console.log(userID, photoEntryID);
   // query for existing userID in Collection
   const matchedUser = await getMatchedUser(userID);
   if(!matchedUser) return res.sendStatus(404); // userID is not in the collection
@@ -64,7 +65,6 @@ const getUserCollectionPhotoEntries = asyncWrapper(async (req, res) => {
   const { userCollection } = matchedUser ?? {}; // extract userCollection 
   if(userCollection.length < 1) return res.status(404).json({success: false, message: 'Your collection is empty'}); // userID is in the Collection, but user's photo collection is empty
   const photoEntries = await PhotoEntryGallery.find({ '_id': { $in: userCollection } }); // find photo entries in gallery Collection 
-  console.log(photoEntries);
   res.status(200).json({ success: true, userCollection: photoEntries,  message: 'Fetching user collection was successful' }); 
 }) 
 

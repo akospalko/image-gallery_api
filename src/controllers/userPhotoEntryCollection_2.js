@@ -1,7 +1,5 @@
-// version where collection ID-s are stored in photoEntry collection  
 // handle functionality for auth-d user adding/removing photoIDs to/from their collection && fetching photo entries based on the stored photoIDs   
 // TODO: handle improper id format
-// TODO: rename controlers
 const asyncWrapper = require('../middleware/asyncWrapper');
 const UserPhotoEntryCollection = require('../models/UserPhotoEntryCollectionSchema');
 const PhotoEntryGallery = require('../models/PhotoEntryGallerySchema');
@@ -23,26 +21,24 @@ const addPhotoIDToCollection = asyncWrapper(async (req, res) => {
   const { userID, photoEntryID } = req.params ?? {};
   console.log(userID, photoEntryID);
   if(!userID || !photoEntryID) return res.status(400).json({message: 'User id and photo entry id are required'});
-  // query for existing  photoEntry in Collection
-  const matchedPhotoEntry = await PhotoEntryGallery.findOne({_id: photoEntryID});
-  // check for existing photo entry
-  if(!matchedPhotoEntry) return res.status(404).json({success: false, message: 'Photo entry does not exist'}) // photo entry with this ID does not exist
-  // check if photo is in user's collection
-  const matchedUser = await PhotoEntryGallery.findOne({inCollection: userID});
-  // userID is in inCollection: duplicate
-  if(matchedUser) return res.status(403).json({success: false, message: 'Photo is already in your collection'}); // duplicate photoID
-  // userID is in not inCollection: add userID to inCollection
-  // TODO: just update, pass matchedUser as param 
-   const addToUserCollection = await PhotoEntryGallery.updateOne({ $addToSet: { inCollection: userID }}, options); 
-  //  const addToUserCollection = await PhotoEntryGallery.findOneAndUpdate({ inCollection: userID }, { $addToSet: { userCollection: photoEntryID }}, options); 
+  // query for existing userID in Collection
+  const matchedUser =  await getMatchedUser(userID);
+  // create new Document, add new photoID to the userCollection
+  if(!matchedUser) { // user is not in the Collection 
+    const newUserCollection = await UserPhotoEntryCollection.create({userID, userCollection: [photoEntryID]}); // create new document + add photoID to userCollection
+    if(!newUserCollection) return res.status(400).json({success: false, message: 'Could not add photo entry to your collection'}) 
+    res.status(200).json({success: true, message: 'Photo is successfully added to your collection'});
+  }
+  // prepare to update userCollection
+  const { userCollection } = matchedUser ?? {}; // get userCollection
+  const isDuplicatePhotoID = userCollection.find(photoID => photoID?.valueOf() === photoEntryID); // check if photoID is in the usserCollection
+  if(isDuplicatePhotoID) return res.status(403).json({success: false, message: 'Photo is already in your collection'}); // duplicate photoID
+  // update userCollection
+  const updatedUserCollection = await UserPhotoEntryCollection.findOneAndUpdate(filterUserID(userID), { $addToSet: { userCollection: photoEntryID }}, options); 
   // handle update result
-  if(!addToUserCollection) return res.status(400).json({success: false, message: 'Could not add photo to your collection'}); 
+  if(!updatedUserCollection) return res.status(400).json({success: false, message: 'Could not add photo entry to your collection'}); 
   res.status(201).json({success: true, message: 'Photo is successfully added to your collection'});
 })
-
-
-
-// TODO: REWORK
 // DELETE from collection
 const removePhotoIDFromCollection = asyncWrapper(async (req, res) => {
   // get/confirm request data
@@ -92,3 +88,7 @@ module.exports = {
   removePhotoIDFromCollection,
   getUserCollectionPhotoEntries
 }
+
+
+
+

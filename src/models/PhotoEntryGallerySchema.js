@@ -26,6 +26,12 @@ const PhotoEntryGallerySchema = new mongoose.Schema({
     type: String,
     required: true,
   }, 
+  inCollection: {
+    type: [mongoose.Schema.Types.ObjectId]
+  }, 
+  likes: {
+    type: [mongoose.Schema.Types.ObjectId]
+  }
 },   
 { timestamps: true }
 )

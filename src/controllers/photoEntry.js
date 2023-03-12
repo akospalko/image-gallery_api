@@ -47,7 +47,7 @@ const createPhotoEntry = asyncWrapper(async (req, res) => {
   const resizedFileBuffer = await resizePhoto(buffer);  // resize file before upload using sharp
   const photoName = randomName();  // generate randomized photo name 
   await uploadPhoto(photoName, resizedFileBuffer, mimetype);
-  const entryData = {title, author, gpsLatitude, gpsLongitude, captureDate, description, photoName} 
+  const entryData = {title, author, gpsLatitude, gpsLongitude, captureDate, description, photoName, inCollection: [], likes: []} 
   const photoEntry = await activeCollection.create(entryData); 
   if(!photoEntry) return res.status(400).json({ success: false, message: 'Could not create entry. Try again!' }); 
   res.status(201).json({ success: true, photoEntry, message: 'Entry created successfully' }); 

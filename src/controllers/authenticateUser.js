@@ -26,7 +26,7 @@ const loginUser = asyncWrapper(async (req, res) => {
         }
       },
       process.env.JWT_ACCESS_TOKEN_SECRET, // access token's secret key  
-      { expiresIn: '30s' } // expiry date, production mode: 5-10min 
+      { expiresIn: '60000s' } // expiry date, production mode: 5-10min 
     );
     const refreshToken = jwt.sign(
       { username: foundUser.username }, 
@@ -37,7 +37,7 @@ const loginUser = asyncWrapper(async (req, res) => {
     foundUser.refreshToken = refreshToken;
     const updatedUser = await foundUser.save();
     // send secure cookie (http only) with the refresh token to the client cookie
-    res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }); // duration: 1d  
+    res.cookie('jwt', refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }); // duration: 1d  
     // send success message and access token to user
     res.status(200).json({ success: true, message: `Success. ${ username } is logged in`, roles, accessToken, userID: foundUser._id });
   } else {

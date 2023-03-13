@@ -39,7 +39,6 @@ const deletePhoto = async (photoName) => {
   const deleteCommand = new DeleteObjectCommand(params);
   await s3.send(deleteCommand);
 }
-
 // get signed url of the storage photo and pass url to the db entry  
 const getStorageSignedURL = async (data, expireTime = 3600) => {
   if(!data) { return }

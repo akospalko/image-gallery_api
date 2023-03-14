@@ -2,6 +2,8 @@
 const asyncWrapper = require('../middleware/asyncWrapper');
 // const UserPhotoEntryCollection = require('../models/UserPhotoEntryCollectionSchema');
 const PhotoEntryGallery = require('../models/PhotoEntryGallerySchema');
+const { ObjectId } = require('mongodb')
+
 const { 
   getStorageSignedURL
 } = require('../middleware/storage');
@@ -49,18 +51,21 @@ const removePhotoEntryFromCollection = asyncWrapper(async (req, res) => {
 //   res.status(200).json({ success: true, message: 'Fetching user collection was successful' }); 
 // })
 
-// GET all the photo entries from the user collection
+// GET, returns all entries from the user's collection (the returned data is used in user's my own collection).
 const getUserCollection = asyncWrapper (async (req, res) => {
   // TODO: create photo URL, return photo entries...
   const { userID } = req.params ?? {};
   if (!userID) return sendStatus(401); // req userID is missing
   // find photoEntry
   const photoEntries = await PhotoEntryGallery.find({ 'inCollection' : { $in: userID } }).lean(); 
-  if (!photoEntries) return res.status(404).json({ success: false, message: "Couldn't find photos"});
-  const { inCollection } = photoEntries;
-  if(inCollection?.length < 1) return res.status(404).json({ success: false, message: 'Your collection is empty' }); // photo entries exist, but they are not in user's photo collection
+  if (!photoEntries) return res.status(404).json({ success: false, message: 'Your collection is empty' });
+  const returnPhotoEntries = photoEntries.map(entry => {   // return bool values for inCollection/likes states  
+    entry.inCollection = true;
+    entry.likes = false; // TODO: fix 'likes' value, just a dummy value for now // probably rename: 'liked'
+    return entry;
+  })
   await getStorageSignedURL(photoEntries); // get each fetched entry's photo name and create signed url for them
-  res.status(200).json({ success: true, photoEntries: photoEntries, message: 'Fetching user collection was successful' });
+  res.status(200).json({ success: true, photoEntries: returnPhotoEntries, message: 'Fetching user collection was successful' });
 })
 
 // // GET PHOTO ENTRIES or PHOTO ENTRIES ID from USER'S COLLECTION 
@@ -90,7 +95,7 @@ const getUserCollection = asyncWrapper (async (req, res) => {
 module.exports = {
   addPhotoEntryToCollection,
   removePhotoEntryFromCollection,
-  getSingleCollectionEntry,
+  // getSingleCollectionEntry,
   getUserCollection,
-  getUserCollectionPhotoEntries
+  // getUserCollectionPhotoEntries
 }

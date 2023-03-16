@@ -43,7 +43,7 @@ const removePhotoEntryFromCollection = asyncWrapper(async (req, res) => {
 // const getSingleCollectionEntry = asyncWrapper (async (req, res) => {
 //   const { userID, í } = req.params ?? {};
 //   if (!userID) return sendStatus(401); // req userID is missing
-//   // fing photoEntry
+//   // find photoEntry
 //   const photoEntries = await PhotoEntryGallery.find({ 'inCollection' : { $in: userID } }); 
 //   if (!photoEntries) return res.status(404).json({ success: false, message: "Couldn't find entries"});
 //   const { inCollection } = photoEntries;
@@ -51,17 +51,18 @@ const removePhotoEntryFromCollection = asyncWrapper(async (req, res) => {
 //   res.status(200).json({ success: true, message: 'Fetching user collection was successful' }); 
 // })
 
-// GET, returns all entries from the user's collection (the returned data is used in user's my own collection).
+// GET, returns all entries from the user's collection (the returned data is used in user's own collection).
 const getUserCollection = asyncWrapper (async (req, res) => {
-  // TODO: create photo URL, return photo entries...
   const { userID } = req.params ?? {};
   if (!userID) return sendStatus(401); // req userID is missing
   // find photoEntry
   const photoEntries = await PhotoEntryGallery.find({ 'inCollection' : { $in: userID } }).lean(); 
   if (!photoEntries) return res.status(404).json({ success: false, message: 'Your collection is empty' });
-  const returnPhotoEntries = photoEntries.map(entry => {   // return bool values for inCollection/likes states  
-    entry.inCollection = true;
-    entry.likes = false; // TODO: fix 'likes' value, just a dummy value for now // probably rename: 'liked'
+  const returnPhotoEntries = photoEntries.map(entry => { // calculate isInCollection, isLiked values, remove unecessary values: inCollection, likes
+    entry.isInCollection = true;
+    entry.isLiked = false;
+    delete entry.inCollection;
+    delete entry.likes; 
     return entry;
   })
   await getStorageSignedURL(photoEntries); // get each fetched entry's photo name and create signed url for them

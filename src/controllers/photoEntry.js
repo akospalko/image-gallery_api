@@ -32,17 +32,20 @@ const getAllPhotoEntries = asyncWrapper(async (req, res) => {
   // TODO: convert inCollection and likes fields to return a boolean value
   const returnPhotoEntries = photoEntries.map(entry => { // return bool values for inCollection/likes states  
     // check if entry.inCollection, includes userID
-    const collectionToString = entry.inCollection.map(id => id.toString())
-    if(collectionToString && collectionToString.length) {
-      entry.isInCollection = true ; // is the photo entry in the user's collection
-      entry.inCollection = entry.inCollection.length; 
+    const collectionIDToString = entry.inCollection.map(id => id.toString())
+    const findUserCollection = collectionIDToString.includes(userID); // check for auth-d user's collectionized photos (photos added to collection) 
+    // console.log('CCC', collectionIDToString)
+    if(findUserCollection) { // is the photo entry in the user's collection
+      entry.isInCollection = true ; 
     } else {
       entry.isInCollection = false; 
     }
-    entry.inCollection = entry.inCollection.length || 0; 
-    entry.likes = entry.likes.length || 0; 
+    entry.inCollection = collectionIDToString.length && collectionIDToString.length >= 1 ? collectionIDToString.length : 0; 
+    entry.likes = 0; // dummy value
+    entry.isLiked = false; // dummy value
     return entry;
   })
+
   await getStorageSignedURL(photoEntries); // get each fetched entry's photo name and create signed url for them (by passing photo name to the getObjectParams' key prop).  
   res.status(200).json({ success: true, photoEntries: returnPhotoEntries, message: 'All entries were successfully fetched' }); 
 })

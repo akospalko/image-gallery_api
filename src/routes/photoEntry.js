@@ -16,7 +16,7 @@ const {
 router.route('/:collection')
 .get(verifyRoles(ROLES_LIST.user, ROLES_LIST.admin), getAllPhotoEntries) 
 .post(verifyRoles(ROLES_LIST.admin), photoEntry.single("photoFile"), createPhotoEntry);
-router.route('/:collection/:id')
+router.route('/:collection/:photoEntryID')
 .delete(verifyRoles(ROLES_LIST.admin), deletePhotoEntry)
 .get(verifyRoles(ROLES_LIST.user, ROLES_LIST.admin), getSinglePhotoEntry)
 .patch(verifyRoles(ROLES_LIST.editor, ROLES_LIST.admin), photoEntry.single("photoFile"), updatePhotoEntry)

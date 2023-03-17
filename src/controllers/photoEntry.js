@@ -31,8 +31,7 @@ const getAllPhotoEntries = asyncWrapper(async (req, res) => {
   if(!photoEntries) return res.status(404).json({ success: false, message: 'Couldn\'t fetch entries' });   // if unsuccessful return error message
   // TODO: convert inCollection and likes fields to return a boolean value
   const returnPhotoEntries = photoEntries.map(entry => { // return bool values for inCollection/likes states  
-    // check if entry.inCollection, includes userID
-    const collectionIDToString = entry.inCollection.map(id => id.toString())
+    const collectionIDToString = entry.inCollection.map(id => id.toString()) // check if entry.inCollection, contains userID
     const findUserCollection = collectionIDToString.includes(userID); // check for auth-d user's collectionized photos (photos added to collection) 
     // console.log('CCC', collectionIDToString)
     if(findUserCollection) { // is the photo entry in the user's collection
@@ -45,19 +44,42 @@ const getAllPhotoEntries = asyncWrapper(async (req, res) => {
     entry.isLiked = false; // dummy value
     return entry;
   })
-
-  await getStorageSignedURL(photoEntries); // get each fetched entry's photo name and create signed url for them (by passing photo name to the getObjectParams' key prop).  
+  await getStorageSignedURL(returnPhotoEntries); // get each fetched entry's photo name and create signed url for them (by passing photo name to the getObjectParams' key prop).  
   res.status(200).json({ success: true, photoEntries: returnPhotoEntries, message: 'All entries were successfully fetched' }); 
 })
 // GET single entry
 const getSinglePhotoEntry = asyncWrapper(async (req, res) => {
-  const { collection, photoEntryID } = req.params;
+  const { collection, photoEntryID } = req.params; 
+  const { userID } = req.query;
+  // console.log('uID', userID, 'eID', photoEntryID, collection);
   const activeCollection = findActiveCollection(collection); // get active collection
   const photoEntry = await activeCollection.findOne({ _id: photoEntryID }).lean(); // get db entry as plain object
-  if (!photoEntry) return res.status(404).json({ success: false, message: `Entry was not found. ID: ${photoEntryID}` });
-  await getStorageSignedURL(photoEntry); // get signed url, assign  value to photoURL field  
-  res.status(200).json({ success: true, photoEntry, message: `Entry is fetched successfully. ID: ${photoEntryID}` });
+  if (!photoEntry) return res.status(404).json({ success: false, message: `Entry was not found. ID: ${ photoEntryID }` });
+  // TODO: convert inCollection and likes fields to return a boolean value
+  const collectionIDToString = photoEntry.inCollection.map(id => id.toString()) // check if entry.inCollection, contains userID
+  const findUserCollection = collectionIDToString.includes(userID); // check if userID is in photo entry's inCollection
+  const returnPhotoEntry = {...photoEntry};
+  if(findUserCollection) { // is the photo entry in the user's collection
+    returnPhotoEntry.isInCollection = true ; 
+  } else {
+    returnPhotoEntry.isInCollection = false; 
+  }
+  returnPhotoEntry.inCollection = collectionIDToString.length && collectionIDToString.length >= 1 ? collectionIDToString.length : 0; 
+  returnPhotoEntry.likes = 0; // dummy value
+  returnPhotoEntry.isLiked = false; // dummy value
+  console.log(returnPhotoEntry);
+  // await getStorageSignedURL(returnPhotoEntry); // get signed url, assign  value to photoURL field  
+  res.status(200).json({ success: true, photoEntry: returnPhotoEntry, message: `Entry is fetched successfully. ID: ${ photoEntryID }` });
 })
+// // GET single entry
+// const getSinglePhotoEntry = asyncWrapper(async (req, res) => {
+//   const { collection, photoEntryID } = req.params;
+//   const activeCollection = findActiveCollection(collection); // get active collection
+//   const photoEntry = await activeCollection.findOne({ _id: photoEntryID }).lean(); // get db entry as plain object
+//   if (!photoEntry) return res.status(404).json({ success: false, message: `Entry was not found. ID: ${ photoEntryID }` });
+//   await getStorageSignedURL(photoEntry); // get signed url, assign  value to photoURL field  
+//   res.status(200).json({ success: true, photoEntry, message: `Entry is fetched successfully. ID: ${ photoEntryID }` });
+// })
 // CREATE photo entry
 const createPhotoEntry = asyncWrapper(async (req, res) => {
   const { collection } = req.params;
@@ -85,7 +107,7 @@ const updatePhotoEntry = asyncWrapper(async (req, res) => {
     const fetchedPhotoEntry = await activeCollection.findOne({ _id: photoEntryID });
     if(!fetchedPhotoEntry) return res.status(404).json({ success: false, message: `No photo entry with id: ${photoEntryID}` });
     const photoName = fetchedPhotoEntry.photoName;
-    updateData = {...updateData, photoName};
+    updateData = { ...updateData, photoName };
     const resizedFileBuffer = await resizePhoto(req.file.buffer); // resize photo
     await uploadPhoto(photoName, resizedFileBuffer, req.file.mimetype); // upload photo
   }

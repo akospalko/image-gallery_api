@@ -16,7 +16,7 @@ const logoutUser = require('./routes/logoutUser');
 const photoEntry = require('./routes/photoEntry');
 const getAllHomePhotos = require('./routes/getAllHomePhotos');
 const userPhotoEntryCollection = require('./routes/userPhotoEntryCollection');
-// const userPhotoEntryLikes = require('./routes/userPhotoEntryLikes');
+const userPhotoEntryLikes = require('./routes/userPhotoEntryLikes');
 
 // MIDDLEWARES
 // handle url encoded form data
@@ -41,9 +41,7 @@ app.use('/api/v1/home-photos', getAllHomePhotos); // get phto entries for home p
 app.use(verifyJWT); // protect all routes defined after invoked
 app.use('/api/v1/photo-entry', photoEntry);
 app.use('/api/v1/user-photo-collection', userPhotoEntryCollection); // add/remove photo to/from user's own collection
-
-// TODO: photo "like" functionalities
-// app.use('api/v1/user-photo-likes', userPhotoEntryLikes);
+app.use('/api/v1/user-photo-likes', userPhotoEntryLikes); // TODO: photo "like" functionalities
 // TODO: route for handling users: create, update, delete, assign role
 
 const serverStart = async () => {

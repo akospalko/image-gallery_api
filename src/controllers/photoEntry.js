@@ -22,7 +22,6 @@ const findActiveCollection = (collectionName) => {
 }
 // GET all photo entries
 const getAllPhotoEntries = asyncWrapper(async (req, res) => {
-  // TODO: likes: calc [] length, inCollection: calc [] length, isInCollection: bool, isLiked: bool, 
   const { collection } = req.params;
   const { userID } = req.query;
   const activeCollection = findActiveCollection(collection); // get active collection
@@ -32,13 +31,13 @@ const getAllPhotoEntries = asyncWrapper(async (req, res) => {
     // handle collection
     const collectionIDToString = entry.inCollection.map(id => id.toString()) // convert inCollection[] object id-s to strings[] 
     const isCollectionized = collectionIDToString.includes(userID); // check for auth-d user's collectionized photos (photos added to collection) 
-    isCollectionized ? entry.isInCollection = true : entry.isInCollection = false // is the photo entry in the user's collection
-    entry.inCollection = collectionIDToString.length && collectionIDToString.length >= 1 ? collectionIDToString.length : 0; 
+    entry.isInCollection = isCollectionized // is the photo entry in the user's collection
+    entry.inCollection = collectionIDToString.length || 0; 
     // handle likes 
     const likesIDToString = entry.likes.map(id => id.toString()) // convert inCollection[] object id-s to strings[]   
     const isEntryLiked = likesIDToString.includes(userID); // check if entry.likes [], contains the userID (user liked the photo)   
-    isEntryLiked ? entry.isLiked = true : entry.isLiked = false
-    entry.likes = likesIDToString.length && likesIDToString.length >= 1 ? likesIDToString.length : 0; 
+    entry.isLiked = isEntryLiked;
+    entry.likes = likesIDToString.length || 0; 
     return entry;
   })
   await getStorageSignedURL(returnPhotoEntries); // get each fetched entry's photo name and create signed url for them (by passing photo name to the getObjectParams' key prop).  

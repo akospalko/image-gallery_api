@@ -13,10 +13,10 @@ const credentials = require('./middleware/credentials');
 const authenticateUser = require('./routes/authenticateUser');
 const refreshToken = require('./routes/refreshToken');
 const logoutUser = require('./routes/logoutUser');
-const photoEntry = require('./routes/photoEntry');
-const getAllHomePhotos = require('./routes/getAllHomePhotos');
-const userPhotoEntryCollection = require('./routes/userPhotoEntryCollection');
-const userPhotoEntryLikes = require('./routes/userPhotoEntryLikes');
+const photoGallery = require('./routes/PhotoEntry/photoGallery');
+const photoHome = require('./routes/PhotoEntry/photoHome');
+const photoUserCollection = require('./routes/PhotoEntry/photoUserCollection');
+const photoUserLikes = require('./routes/PhotoEntry/photoUserLikes');
 
 // MIDDLEWARES
 // handle url encoded form data
@@ -36,12 +36,12 @@ app.use('/api/v1/register', registerUser);
 app.use('/api/v1/login', authenticateUser);
 app.use('/api/v1/refresh', refreshToken); // receives cookie w refresht token -> issues a new access token when it expires 
 app.use('/api/v1/logout', logoutUser); // logout user by deleting active tokens
-app.use('/api/v1/home-photos', getAllHomePhotos); // get phto entries for home page photo slider 
+app.use('/api/v1/photo-home', photoHome); // get photo entries for home page photo slider 
 // protected
-app.use(verifyJWT); // protect all routes defined after invoked
-app.use('/api/v1/photo-entry', photoEntry);
-app.use('/api/v1/user-photo-collection', userPhotoEntryCollection); // add/remove photo to/from user's own collection
-app.use('/api/v1/user-photo-likes', userPhotoEntryLikes); // TODO: photo "like" functionalities
+app.use(verifyJWT); // protect all routes defined after jwt verification
+app.use('/api/v1/photo-gallery', photoGallery); // crud for photo gallery entries and user collection 
+app.use('/api/v1/photo-user-collection', photoUserCollection); // add/remove photo to/from user's own collection
+app.use('/api/v1/photo-user-like', photoUserLikes); // photo "like" functionalities
 // TODO: route for handling users: create, update, delete, assign role
 
 const serverStart = async () => {

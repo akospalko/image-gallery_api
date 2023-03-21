@@ -1,7 +1,7 @@
-// handle photo entry CRUD operations  
-const PhotoEntryHome = require('../models/PhotoEntryHomeSchema');
-const asyncWrapper = require('../middleware/asyncWrapper');
-const { getStorageSignedURL } = require('../middleware/storage');
+// getter for home photos unprotected route  
+const PhotoEntryHome = require('../../models/PhotoEntryHomeSchema');
+const asyncWrapper = require('../../middleware/asyncWrapper');
+const { getStorageSignedURL } = require('../../middleware/storage');
 
 // GET all photo entries from home Collection, displayed on the home page photo carousel   
 const getAllHomePhotos = asyncWrapper(async (req, res) => {

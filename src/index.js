@@ -8,8 +8,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./database/connect');
 const verifyJWT = require('./middleware/verifyJWT');
-const registerUser = require('./routes/registerUser');
 const credentials = require('./middleware/credentials');
+// import routes 
+const registerUser = require('./routes/registerUser');
 const authenticateUser = require('./routes/authenticateUser');
 const refreshToken = require('./routes/refreshToken');
 const logoutUser = require('./routes/logoutUser');
@@ -17,6 +18,8 @@ const photoGallery = require('./routes/PhotoEntry/photoGallery');
 const photoHome = require('./routes/PhotoEntry/photoHome');
 const photoUserCollection = require('./routes/PhotoEntry/photoUserCollection');
 const photoUserLikes = require('./routes/PhotoEntry/photoUserLikes');
+const passwordReset = require('./routes/Authentication/passwordReset');
+const passwordNew = require('./routes/Authentication/passwordNew');
 
 // MIDDLEWARES
 // handle url encoded form data
@@ -36,6 +39,12 @@ app.use('/api/v1/register', registerUser);
 app.use('/api/v1/login', authenticateUser);
 app.use('/api/v1/refresh', refreshToken); // receives cookie w refresht token -> issues a new access token when it expires 
 app.use('/api/v1/logout', logoutUser); // logout user by deleting active tokens
+// TODO: password reset
+app.use('/api/v1/password-reset', passwordReset) // generate new jwt protected link to reset user's password and send it to the specified email address
+// TODO: password new
+app.use('/api/v1/password-new', passwordNew) // verify opened jwt protected link, and create new password for the user
+app.use('/api/v1/password-new', passwordNew) // verify opened jwt protected link, and create new password for the user
+
 app.use('/api/v1/photo-home', photoHome); // get photo entries for home page photo slider 
 // protected
 app.use(verifyJWT); // protect all routes defined after jwt verification

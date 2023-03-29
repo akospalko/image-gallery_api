@@ -41,7 +41,7 @@ const loginUser = asyncWrapper(async (req, res) => {
     // send success message and access token to user
     res.status(200).json({ success: true, message: `Success. ${ username } is logged in`, roles, accessToken, userID: foundUser._id });
   } else {
-    res.status(401).json({ success: true, message: 'Incorrect username or password ' });
+    res.status(401).json({ success: false, message: 'Incorrect username or password' });
   }
 })
 

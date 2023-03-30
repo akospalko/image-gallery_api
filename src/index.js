@@ -39,10 +39,10 @@ app.use('/api/v1/register', registerUser);
 app.use('/api/v1/login', authenticateUser);
 app.use('/api/v1/refresh', refreshToken); // receives cookie w refresht token -> issues a new access token when it expires 
 app.use('/api/v1/logout', logoutUser); // logout user by deleting active tokens
+
 // TODO: password reset
 app.use('/api/v1/password-reset', passwordReset) // generate new jwt protected link to reset user's password and send it to the specified email address
 // TODO: password new
-app.use('/api/v1/password-new', passwordNew) // verify opened jwt protected link, and create new password for the user
 app.use('/api/v1/password-new', passwordNew) // verify opened jwt protected link, and create new password for the user
 
 app.use('/api/v1/photo-home', photoHome); // get photo entries for home page photo slider 

@@ -4,7 +4,7 @@ const router = express.Router();
 // TODO: import controllers
 const { checkLinkValidity, createNewPassword } = require('../../controllers/Authentication/passwordNew');
 
-router.route('/')
+router.route('/:id/:token')
 .get(checkLinkValidity)
 .post(createNewPassword);
 

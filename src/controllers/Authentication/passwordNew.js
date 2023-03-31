@@ -6,29 +6,27 @@ const bcrypt = require('bcrypt');
 const checkLinkValidity = asyncWrapper(async (req, res) => {
   const {id, token} = req.params;
   console.log(id, token);
-  // TODO: find user by provided id 
+  if(!id || !token ) return res.status(400).json({ successs: false, message: 'provide ID and/or TOKEN' });
   const user = await User.findById(id); // find user in DB by provided id
-  if(!user) return res.status(404).json({successs: false, message: 'Invalid user'});
-  // verify token
-  // convert token back: replace '-' with '.'
-  const convertedToken = token.replaceAll('-','.'); 
+  if(!user) return res.status(404).json({ successs: false, message: 'Invalid user' });
+  const convertedToken = token.replaceAll('-','.');   // convert url compatible token back: replace '-' with '.' 
   const secret = process.env.JWT_ACCESS_TOKEN_SECRET + user.password;
   try {
     const payload = jwt.verify(convertedToken, secret); 
     console.log(payload);
   } catch(error) {
     console.log(error);
+    return res.status(401).json({ successs: false, isTokenValid: false, message: 'Link has expired' });
   }
-  // TODO:
-  res.json({success: true, message: 'checked link validity'});
+  res.status(200).json({ successs: true, isTokenValid: true, message: 'Link is valid' });
 })
 
 const createNewPassword = asyncWrapper(async (req, res) => {
   const {id, token} = req.params;
-  const {email, password, passwordConfirm} = req.body.data;
-  // TODO: validate pw: 2 pw-s are equal, pw is the same -> didn't change (user provided the same pw as the currently acive pw)
+  if(!id || !token ) return res.status(400).json({ successs: false, message: 'provide ID and/or TOKEN' });
+  const {email, password, passwordConfirm} = req.body;
   if(!email || !password || !passwordConfirm) return res.status(400).json({ successs: false, message: 'Provide password' });
-  if(password !== passwordConfirm) return res.status(400).json({ successs: false, message: 'Passwords does not match' });
+  if(password !== passwordConfirm) return res.status(400).json({ successs: false, message: 'Passwords do not match' }); // compare provided passwords 
   // TODO: find user by provided id  
   const user = await User.findById(id); // find user in DB by provided id
   if(!user) return res.status(404).json({ successs: false, message: 'Invalid user' });
@@ -41,18 +39,28 @@ const createNewPassword = asyncWrapper(async (req, res) => {
   const convertedToken = token.replaceAll('-','.'); 
   try {
     const payload = jwt.verify(convertedToken, secret); 
-    console.log(payload);
-    // TODO: update DB pw
-      // TODO: encrypt new pw 
-      const hashedPassword = await bcrypt.hash(password, 10); // hash pw using bcrypt
-      // TODO: update pw 
-      // const updatedPassword = User.findOneAndUpdate({}); // find by id and email
-      // TODO: send success response 
+    // console.log(payload);
+    const {id:tokenID, email:tokenEmail} = payload ?? {};
+    const user = await User.findOne({_id: tokenID, email: tokenEmail }); // find user by id and email
+    if(!user) return res.status(404).json({ successs: false, message: 'Invalid user' });
+    //update DB pw
+    if(email != tokenEmail) return res.status(400).json({ successs: false, message: 'Wrong email' }); // compre emails (token email to body)
+    // Handle password
+ 
+    const matchedPassword = await bcrypt.compare(password, user.password); // compare body password with user.password
+    if(matchedPassword) return res.status(400).json({ successs: false, message: 'New password cannot be the same as the current one' }); 
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10); // hash new password
+      user.password = hashedPassword;  // update & save user
+      await user.save();
+      return res.status(200).json({successs: true, message: 'Success. New password is saved' })
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message })
+    }
   } catch(error) {
     console.log(error);
-    // TODO: send response - invalid token
+    return res.status(401).json({ successs: false, isTokenValid: false, message: 'Link has expired' }); // invalid token
   }
-  // res.json({success: true, message: 'create pw test'});
 })
 
 module.exports = { createNewPassword, checkLinkValidity }; 

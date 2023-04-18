@@ -51,6 +51,7 @@ const getSinglePhotoEntry = asyncWrapper(async (req, res) => {
 // CREATE photo entry
 const createPhotoEntry = asyncWrapper(async (req, res) => {
   const { collection } = req.params;
+  if(!req.file || !collection) return res.status(400).json({ success: false, message: 'Bad request!' });
   const activeCollection = findActiveCollection(collection); // get active collection
   const {title, author, gpsLatitude, gpsLongitude, captureDate, description} = req.body;
   const {buffer, mimetype} = req.file;
@@ -66,6 +67,7 @@ const createPhotoEntry = asyncWrapper(async (req, res) => {
 // UPDATE (PATCH) photo entry
 const updatePhotoEntry = asyncWrapper(async (req, res) => {
   const { collection, photoEntryID } = req.params; 
+  if(!collection || !photoEntryID) return res.status(400).json({ success: false, message: `Bad request` });
   const activeCollection = findActiveCollection(collection); // get active collection
   const { title, author, gpsLatitude, gpsLongitude, captureDate, description } = req.body; // new req data 
   let updateData = { title, author, gpsLatitude, gpsLongitude, captureDate, description }; // new data we want to update the db with 
@@ -81,8 +83,8 @@ const updatePhotoEntry = asyncWrapper(async (req, res) => {
     new: true,
     runValidators: true
   });
-  if (!photoEntry) return res.status(404).json({ success: true, message: `No entry with ID : ${photoEntryID}`});
-  res.status(200).json({ success: true, photoEntry, message: `Entry is fetched successfully. ID: ${photoEntryID}`});
+  if (!photoEntry) return res.status(404).json({ success: true, message: 'Photo entry does not exist'});
+  res.status(200).json({ success: true, photoEntry, message: 'Updating photo entry was successful'});
 })
 // DELETE photo entry 
 const deletePhotoEntry = asyncWrapper(async (req, res) => {

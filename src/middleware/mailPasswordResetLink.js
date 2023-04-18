@@ -15,9 +15,9 @@ const mailPasswordResetLink = async (data) => {
         </h4>
         <p> ${link} </p>
         <ul style="padding-left: 0; list-style-type: none;">
-          <li> E-mail ${email} </li> 
-          <li> Username ${username} </li> 
-          <li> Created	${dateTime} </li> 
+          <li> E-mail: ${email} </li> 
+          <li> Username: ${username} </li> 
+          <li> Created:	${dateTime} </li> 
         </ul>
       </body>
     </html> `

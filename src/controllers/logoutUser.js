@@ -19,7 +19,7 @@ const logoutUser = asyncWrapper(async (req, res) => {
   await foundUser.save();
   // remove cookie
   res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true }); // remove cookie
-  return res.sendStatus(204);
+  return res.status(200).json({success: true, message: 'Logout success'});
 })
 
 module.exports = { logoutUser };

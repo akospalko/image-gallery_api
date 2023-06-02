@@ -13,7 +13,7 @@ const checkLinkValidity = asyncWrapper(async (req, res) => {
   try {
     // const payload = jwt.verify(convertedToken, secret); 
     jwt.verify(convertedToken, secret); 
-    return res.status(200).json({ success: true, isTokenValid: true, message: 'Link is valid' });
+    return res.status(200).json({ success: true, isTokenValid: true, message: 'Enter new password' }); // link is valid: enter new password
   } catch(error) {
     return res.status(401).json({ success: false, isTokenValid: false, message: 'Link has expired' });
   }

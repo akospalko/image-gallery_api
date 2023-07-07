@@ -35,14 +35,16 @@ const loginUser = asyncWrapper(async (req, res) => {
     );
     // update current user's document with the refresh token
     foundUser.refreshToken = refreshToken;
-    const updatedUser = await foundUser.save();
+    await foundUser.save();
     // send secure cookie (http only) with the refresh token to the client cookie
     res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }); // duration: 1d  
+    // prepare user data to send back as a response
+    const responseUserData = { username: foundUser.username, email: foundUser.email, createdAt: foundUser.createdAt, userID: foundUser._id }
     // send success message and access token to user
-    res.status(200).json({ success: true, message: 'Login success', roles, accessToken, userID: foundUser._id });
+    res.status(200).json({ success: true, message: 'Login success', roles, accessToken, ...responseUserData });
   } else {
     res.status(401).json({ success: false, message: 'Incorrect username or password' });
   }
 })
 
-module.exports = {loginUser};
+module.exports = { loginUser };

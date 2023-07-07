@@ -17,16 +17,16 @@ const calculateMetrics = (photoEntries) => {
     locations: 0, 
   };
   // handle empty / not available photo entries
-  if(!photoEntries.length) return metrics;
+  if(!photoEntries?.length) return metrics;
   // container for unique authors
   const uniqueAuthors = []; 
 
   // aggregate entry values
-  for(let i= 0; i < photoEntries.length; i++) {
+  for(let i= 0; i < photoEntries?.length; i++) {
     // calc likes, collectionized photos 
-    metrics.likes += photoEntries[i].likes.length || 0;
-    metrics.collectionized += photoEntries[i].inCollection.length || 0;
-    metrics.downloaded += photoEntries[i].downloaded.length || 0;
+    metrics.likes += photoEntries[i].likes?.length || 0;
+    metrics.collectionized += photoEntries[i].inCollection?.length || 0;
+    metrics.downloaded += photoEntries[i].downloaded?.length || 0;
     // calc photos
     metrics.photos++;
     // calc locations
@@ -39,7 +39,7 @@ const calculateMetrics = (photoEntries) => {
     }
   }
   // assign calculated unique authors to metrics
-  metrics.authors = uniqueAuthors.length || 0;
+  metrics.authors = uniqueAuthors?.length || 0;
   return metrics;
 }
 

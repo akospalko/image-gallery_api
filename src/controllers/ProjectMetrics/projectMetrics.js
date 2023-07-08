@@ -40,7 +40,9 @@ const calculateMetrics = (photoEntries) => {
   }
   // assign calculated unique authors to metrics
   metrics.authors = uniqueAuthors?.length || 0;
-  return metrics;
+  // convert metrics to an array: [{name: string , value: number}] 
+  const metricsArr = Object.entries(metrics).map(([name, value]) => ({ name, value }));
+  return metricsArr;
 }
 
 // CONTROLLER

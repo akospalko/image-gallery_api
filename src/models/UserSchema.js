@@ -27,7 +27,15 @@ const UserSchema = new mongoose.Schema({
   },
   refreshToken: {
     type: String
-  }
+  },
+  downloadLimitCount: {
+    type: Number,
+    default: 0,
+  },
+  downloadCooldown: {
+    type: Date,
+    default: null,
+  },
 }, { timestamps: true }) 
 
 module.exports = mongoose.model('User', UserSchema);

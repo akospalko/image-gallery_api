@@ -46,7 +46,7 @@ const getStorageSignedURL = async (data, expireTime = 3600) => {
     for(let entry of data) {
       const getObjectParams = {
         Bucket: bucketName,
-        Key: entry.photoName // photo name to be retreived
+        Key: entry.photoName // photo name to be retreived,
       }
       const getCommand = new GetObjectCommand(getObjectParams); // get the photo from storage   
       const url = await getSignedUrl(s3, getCommand, { expiresIn: expireTime }); // get the photo's signed url

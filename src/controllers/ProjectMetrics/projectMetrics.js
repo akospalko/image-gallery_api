@@ -26,7 +26,7 @@ const calculateMetrics = (photoEntries) => {
     // calc likes, collectionized photos 
     metrics.likes += photoEntries[i].likes?.length || 0;
     metrics.collectionized += photoEntries[i].inCollection?.length || 0;
-    metrics.downloaded += photoEntries[i].downloaded?.length || 0;
+    metrics.downloaded += photoEntries[i].downloads || 0;
     // calc photos
     metrics.photos++;
     // calc locations

@@ -31,9 +31,11 @@ const PhotoEntryGallerySchema = new mongoose.Schema({
   }, 
   likes: {
     type: [mongoose.Schema.Types.ObjectId]
+  },
+  downloads: {
+    type: Number,
+    default: 0,
   }
-},   
-{ timestamps: true }
-)
+}, { timestamps: true } )
 
 module.exports = mongoose.model('PhotoEntryGallery', PhotoEntryGallerySchema)

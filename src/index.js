@@ -18,6 +18,7 @@ const photoGallery = require('./routes/PhotoEntry/photoGallery');
 const photoHome = require('./routes/PhotoEntry/photoHome');
 const photoUserCollection = require('./routes/PhotoEntry/photoUserCollection');
 const photoUserLikes = require('./routes/PhotoEntry/photoUserLikes');
+const photoDownloads = require('./routes/PhotoEntry/photoDownloads');
 const passwordReset = require('./routes/Authentication/passwordReset');
 const passwordNew = require('./routes/Authentication/passwordNew');
 const projectMetrics = require('./routes/ProjectMetrics/projectMetrics');
@@ -55,6 +56,7 @@ app.use(verifyJWT); // protect all routes defined after jwt verification
 app.use('/api/v1/photo-gallery', photoGallery); // crud for photo gallery entries and user collection 
 app.use('/api/v1/photo-user-collection', photoUserCollection); // add/remove photo to/from user's own collection
 app.use('/api/v1/photo-user-like', photoUserLikes); // photo "like" functionalities
+app.use('/api/v1/photo-downloads', photoDownloads); // photo downloads tracker
 // TODO: route for handling users: create, update, delete, assign role
 
 const serverStart = async () => {

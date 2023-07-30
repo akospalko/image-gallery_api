@@ -49,7 +49,7 @@ const calculateMetrics = (photoEntries) => {
 const getProjectMetrics = asyncWrapper(async (req, res) => {
   // get photo entries
   const photoEntries = await PhotoEntryGallery.find({}).lean(); 
-  if(!photoEntries) return res.status(404).json({ success: false, message: 'Couldn\'t fetch photos' }); // faield / no entries  
+  if(!photoEntries) return res.status(404).json({ success: false, message: 'Couldn\'t fetch project metrics' }); // faield / no entries  
   res.status(200).json({ success: true, message: 'Calculating metrics were successful', metrics: calculateMetrics(photoEntries) });
 })
 
